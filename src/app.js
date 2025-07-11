@@ -1,25 +1,33 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import serverless from "serverless-http"; // ✅ REQUIRED for Vercel
+import dotenv from "dotenv";
+import dbConnect from "./dbConnect.js";
+import serverless from "serverless-http";
+
+dotenv.config();
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-  credentials: true,
-}));
+// Middlewares
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Your routes
-import userRouter from "./routes/user.routes.js";
-app.use("/api/v1/users", userRouter);
-
-app.get("/", (req, res) => {
-  res.send("Server is running fine on Vercel!");
+// Database connection
+app.use(async (req, res, next) => {
+  await dbConnect();
+  next();
 });
 
-// ✅ IMPORTANT: DO NOT use app.listen() on Vercel
-export const handler = serverless(app);
+// Your routes
+import userRoutes from "./routes/user.routes.js";
+app.use("/api/v1/users", userRoutes);
+
+// Health check
+app.get("/", (req, res) => {
+  res.send("API is working 🎉");
+});
+
+// ✅ EXPORT for vercel
+export default serverless(app);
