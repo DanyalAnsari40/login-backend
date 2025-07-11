@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose"
 import { DB_NAME } from "./constants.js";
 import connectDb from "./db/dbConnection.js";
-import { app } from "./app.js";
+import { app } from "./api/app.js";
 
 
 // we can use that beacuse we want that  all the env verable available all time 
