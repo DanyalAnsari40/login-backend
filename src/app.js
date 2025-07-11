@@ -5,29 +5,32 @@ import dotenv from "dotenv";
 import dbConnect from "./dbConnect.js";
 import serverless from "serverless-http";
 
+// handle unexpected errors
+process.on('unhandledRejection', (err) => {
+  console.error('💥 Unhandled Rejection:', err);
+});
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err);
+});
+
 dotenv.config();
 
 const app = express();
-
-// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-// Database connection
-app.use(async (req, res, next) => {
-  await dbConnect();
-  next();
+// connect to Mongo
+app.use((req, res, next) => {
+  dbConnect().then(() => next()).catch(next);
 });
 
-// Your routes
+// your routes
 import userRoutes from "./routes/user.routes.js";
 app.use("/api/v1/users", userRoutes);
 
-// Health check
 app.get("/", (req, res) => {
   res.send("API is working 🎉");
 });
 
-// ✅ EXPORT for vercel
 export default serverless(app);
