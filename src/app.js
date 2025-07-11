@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 // your routes
-import userRoutes from "../routes/user.routes.js";
+import userRoutes from "./routes/user.routes.js";
 app.use("/api/v1/users", userRoutes);
 
 app.get("/", (req, res) => {
